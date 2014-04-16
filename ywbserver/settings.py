@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     #'merchant',
     #'registration',
-    #'weixin',
+    'weixin',
     #'surrounding',
     'baby',
     'shop',
@@ -127,4 +127,4 @@ EMAIL_USE_TLS = True
 
 #DATABASE_ROUTERS = ['ywbweb.dbrouter.DBRouter',]
 
-DOMAIN = 'http://localhost:8000/'
+DOMAIN = 'http://wjbb.cloudapp.net:80/'

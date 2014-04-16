@@ -84,7 +84,7 @@ def mobile_view(request):
         return HttpResponse(data_encode(knowls, consumptions, consumptions))
     
 def data_encode(knowls, shops, consumptions):
-    rets = {"knowledges":knowls,"shops":shops,"consumption":consumptions}
+    rets = knowls+shops+consumptions
     return json.dumps(rets, ensure_ascii=False)
     
 def knowledge_list_encode(knowls):
@@ -95,14 +95,15 @@ def knowledge_list_encode(knowls):
         knowl = knowls[i]
         t = {}
         tags = knowl.keyword.split(';')
-        t['knowledgeId'] = knowl.id
-        t['knowledgeTitle'] = knowl.title
+        t['id'] = knowl.id
+        t['title'] = knowl.title
         t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
         t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
         if knowl.abstract:
             t['Abstract'] = knowl.abstract
         else:
             t['Abstract'] = " "
+        t['address'] = ""
         t['link'] = DOMAIN + ("knowledge/webview/%d/" % knowl.id)
         rets.append(t)
     return rets
@@ -119,11 +120,11 @@ def shop_list_encode(shops):
         t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
         t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
         if shop.abstract:
-            t['abstract'] = shop.abstract
+            t['Abstract'] = shop.abstract
         else:
-            t['abstract'] = " "
+            t['Abstract'] = " "
         t['address'] = shop.address
-        t['link'] = DOMAIN + ("consumption/webview/%d/" % shop.id)
+        t['link'] = DOMAIN + ("shop/webview/%d/" % shop.id)
         rets.append(t)
     return rets
 
@@ -139,9 +140,9 @@ def consumption_list_encode(consumptions):
         t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
         t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
         if consumption.abstract:
-            t['abstract'] = consumption.abstract
+            t['Abstract'] = consumption.abstract
         else:
-            t['abstract'] = " "
+            t['Abstract'] = " "
         t['address'] = consumption.address
         t['link'] = DOMAIN + ("consumption/webview/%d/" % consumption.id)
         rets.append(t)

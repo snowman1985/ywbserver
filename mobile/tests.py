@@ -23,7 +23,7 @@ def testgetdata():
     password = 'shentest'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:8000/mobile/getdata/'
+    url = 'http://localhost:80/mobile/getdata/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'knumber': 5,
                'snumber':2, 'cnumber':2}
@@ -38,7 +38,7 @@ def testgetdata_anonymous():
     password = 'wjbb123'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:8000/mobile/getdata/'
+    url = 'http://localhost:80/mobile/getdata/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'knumber': 3,
                'snumber':2, 'cnumber':2, 'age':1000}

@@ -13,7 +13,8 @@ import traceback
 import base64, json, random, math
 from datetime import datetime
 
-from knowledge.models import Knowledge
+from knowledge.models import *
+from shop.models import *
 from .weather import *
 from .models import WeixinUser
 from .baidumap import *
@@ -64,7 +65,7 @@ def weixin_konwledges_reply(age_by_day, number, msg, weatherinfo):
     picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
     for i in range(0, number):
         knowls[i].picurl = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        knowls[i].url = 'http://wjbb.cloudapp.net/weixin/knowledge/%d/'%(knowls[i].id)
+        knowls[i].url = 'http://wjbb.cloudapp.net/knowledge/webview/%d/'%(knowls[i].id)
     context = {}
     context['knowls'] = knowls
     context['fromUser'] = msg['ToUserName']
@@ -77,23 +78,23 @@ def weixin_konwledges_reply(age_by_day, number, msg, weatherinfo):
     context['windstrong'] = weatherinfo['windstrong']
     context['detailinfo'] = weatherinfo['detailinfo']
     context['weather_picurl'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[0])+'.jpg'
-    context['weather_url'] = 'http://wjbb.cloudapp.net/weixin/knowledge/%d/'%(knowls[0].id)
+    context['weather_url'] = 'http://wjbb.cloudapp.net/knowledge/webview/%d/'%(knowls[0].id)
     t = get_template('weixin/knowledges_msg.xml')
     return t.render(Context(context))
 
 def weixin_shop_reply(latitude, longitude, number, msg):
-    shops_nearby = get_shop_nearby(latitude, longitude)
+    shops_nearby = get_shop_nearby(latitude, longitude, number)
     shops = None
-    count = shops_nearby.count()
+    count = len(shops_nearby)
     if(number > count):
-        shops = list(shops_nearby)
+        shops = shops_nearby
         number = count
     else:
-        shops = random.sample(list(shops_nearby), number)
+        shops = random.sample(shops_nearby, number)
     picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
     for i in range(0, number):
         shops[i].picurl = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        shops[i].url = 'http://wjbb.cloudapp.net/shop/getshop/%d/'%(shops[i].id)
+        shops[i].url = 'http://wjbb.cloudapp.net/shop/webview/%d/'%(shops[i].id)
     context = {}
     context['shops'] = shops
     context['fromUser'] = msg['ToUserName']
@@ -147,11 +148,13 @@ def weixin_event_handle(msg):
             else:
                 return weixin_konwledges_reply(birthday_to_age(baby_birthday.strftime('%Y%m%d')),3,msg, weatherinfo)
         if event_key == 'AROUD_BABY':
+            print("around_baby")
             weixin_user = WeixinUser.objects.get(openid=msg['FromUserName'])
             latitude = weixin_user.latitude
             longitude = weixin_user.longitude
             precision = weixin_user.precision
             if latitude and longitude:
+                print("lat:%f, lng:%f" % (latitude, longitude))
                 return weixin_shop_reply(latitude, longitude, 2, msg)
 #                 baidu_location = convert_baidu_location(latitude, longitude)
 #                 if baidu_location and len(baidu_location) == 2:
@@ -172,7 +175,7 @@ def weixin_dev_view(request):
         msg_type = msg['MsgType']
         if msg_type == 'text':
             content = msg['Content']
-            if content.isdigtal():
+            if content.isdigit():
                 try:
                     birthday_str = content
                     weixin_user = WeixinUser.objects.get(openid=msg['FromUserName'])
@@ -223,11 +226,12 @@ def weixin_knowledge_view(request, kid):
         imagestyle = '''<style type="text/css"> div img { display:none } </style>'''
         split1 = html.split('<head>')
         html = ('%s <head> %s %s %s') % (split1[0], adaptorstr, imagestyle, split1[1])
-        #print("new html:", html)
+        print("new html:", html)
         #if html.find('img
         
         imagestart = html.find('<img')
         if imagestart < 0:
+           print("##no image")
         #if True:
            picindex = random.randint(0,9)
            imgstr = '''
@@ -239,6 +243,7 @@ def weixin_knowledge_view(request, kid):
            html = ('%s <body> %s %s')%(htmlsplit[0], imgstr, htmlsplit[1])
 
         else:
+            print("image")
             srcstart = html.find("src", imagestart)
             srcend = html.find("\"", srcstart + 5)
             imageurl = html[srcstart+5:srcend]
@@ -251,6 +256,7 @@ def weixin_knowledge_view(request, kid):
             html = ('%s <body> %s %s')%(htmlsplit[0], imgstr, htmlsplit[1])
             
         #html = t.render(Context(c))
+        #print(html)
         return HttpResponse(html)
     except ValueError:
         raise Http404()

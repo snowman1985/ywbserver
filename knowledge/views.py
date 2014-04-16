@@ -22,15 +22,35 @@ def web_view(request, kid):
         k = Knowledge.objects.get(id = kid)
         content = k.content
         html = content
-        if html.find('<img') < 0:
+        adaptorstr = '''<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1" />'''
+        imagestyle = '''<style type="text/css"> div img { display:none } </style>'''
+        split1 = html.split('<head>')
+        html = ('%s <head> %s %s %s') % (split1[0], adaptorstr, imagestyle, split1[1])
+
+        imagestart = html.find('<img')
+        if imagestart < 0:
+           print("##no image")
            picindex = random.randint(0,9)
            imgstr = '''
 <p style=\"text-align: center\">
-  <img src=\"%s\" style=\"width: 300px; height: 241px\"/>
+  <img src=\"%s\" style=\"width: 300px; height: 241px, display:inline\"/>
 </p>
 ''' % ('http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg')
            htmlsplit = html.split('<body>')
            html = ('%s <body> %s %s')%(htmlsplit[0], imgstr, htmlsplit[1])
+
+        else:
+            print("image")
+            srcstart = html.find("src", imagestart)
+            srcend = html.find("\"", srcstart + 5)
+            imageurl = html[srcstart+5:srcend]
+            imgstr = '''
+<p style=\"text-align: center\">
+  <img src=\"%s\" style=\"width: 300px; height: 241px, display:inline\"/>
+</p>
+''' % (imageurl)
+            htmlsplit = html.split('<body>')
+            html = ('%s <body> %s %s')%(htmlsplit[0], imgstr, htmlsplit[1])
         print(html)
         return HttpResponse(html)
     except ValueError:

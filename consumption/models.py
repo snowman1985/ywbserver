@@ -17,6 +17,12 @@ class Consumption(models.Model):
     point = models.PointField()
     objects = models.GeoManager()
 
+class EduConsumption(models.Model):
+    pass
+
+class EntertainConsumption(models.Model):
+    pass
+
 class ConsumptionComment(models.Model):
     consumptionid = models.ForeignKey(Consumption)
     comment = models.CharField(max_length=500)
