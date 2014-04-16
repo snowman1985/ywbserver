@@ -22,8 +22,6 @@ cur.execute("""SELECT * from shangjias""")
 rowcount = 0
 for row in cur:
   rowcount += 1
-  if rowcount < 487:
-    continue
   print(rowcount)
   try:
     name = row[2]
@@ -42,8 +40,7 @@ for row in cur:
     shop.save()
   except:
     pass
-  #if rowcount == 1:
-  #  break
+
 print("rowcount:", rowcount)
 
 
