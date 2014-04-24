@@ -73,7 +73,7 @@ def mobile_view(request):
         knowls = getknowllist_anonymous(request, knumber)
         shops = getshoplist_anonymous(request, snumber)
         consumptions = getconsumptionlist_anonymous(request, cnumber)
-        return HttpResponse(data_encode(knowls, consumptions, consumptions))
+        return HttpResponse(data_encode(knowls, shops, consumptions))
     else:
         baby = Baby.objects.get(parent_id=user.id)
         if not baby:

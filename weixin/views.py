@@ -148,13 +148,11 @@ def weixin_event_handle(msg):
             else:
                 return weixin_konwledges_reply(birthday_to_age(baby_birthday.strftime('%Y%m%d')),3,msg, weatherinfo)
         if event_key == 'AROUD_BABY':
-            print("around_baby")
             weixin_user = WeixinUser.objects.get(openid=msg['FromUserName'])
             latitude = weixin_user.latitude
             longitude = weixin_user.longitude
             precision = weixin_user.precision
             if latitude and longitude:
-                print("lat:%f, lng:%f" % (latitude, longitude))
                 return weixin_shop_reply(latitude, longitude, 2, msg)
 #                 baidu_location = convert_baidu_location(latitude, longitude)
 #                 if baidu_location and len(baidu_location) == 2:
@@ -226,7 +224,7 @@ def weixin_knowledge_view(request, kid):
         imagestyle = '''<style type="text/css"> div img { display:none } </style>'''
         split1 = html.split('<head>')
         html = ('%s <head> %s %s %s') % (split1[0], adaptorstr, imagestyle, split1[1])
-        print("new html:", html)
+        #print("new html:", html)
         #if html.find('img
         
         imagestart = html.find('<img')
