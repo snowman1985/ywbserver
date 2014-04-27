@@ -15,6 +15,7 @@ from datetime import datetime
 
 from knowledge.models import *
 from shop.models import *
+from user.models import *
 from .weather import *
 from .models import WeixinUser
 from .baidumap import *
@@ -126,6 +127,7 @@ def weixin_event_handle(msg):
         weixin_user.longitude = (float)(longitude)
         weixin_user.precision = (float)(precision)
         weixin_user.save()
+        create_circle_from_position(weixin_user.id, 2, weixin_user.longitude, weixin_user.latitude)
         #return (reply_location%(latitude, longitude, precision))
         print('user  %s location is %s,%s saved in db' % (weixin_user.openid, weixin_user.latitude, weixin_user.longitude))
         return weixin_reply_msg(msg, reply_null)
@@ -193,6 +195,7 @@ def weixin_dev_view(request):
                     weixin_user.latitude = latitude
                     weixin_user.precision = 0
                     weixin_user.save()
+                    create_circle_from_position(weixin_user.id, 2, weixin_user.longitude, weixin_user.latitude)
                     reply = reply_addrok
                 else:
                     reply = reply_addrerr
