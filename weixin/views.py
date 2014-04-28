@@ -117,6 +117,7 @@ def weixin_event_handle(msg):
         if del_user:
             del_user.delete()
             print('weixin user %s unsubscribe' % del_openid)
+            remove_circle(del_user.id, 2)
         return weixin_reply_msg(msg, reply_null)
     if msg['Event'] == 'LOCATION':
         latitude = msg['Latitude']
